@@ -1,66 +1,60 @@
-import React, { Component } from "react";
-import API from "../../utils/API";
+import React from "react";
+// import "./style.css";
+import {Row, Col} from "../Layout/index"
 
-class Results extends Component {
-
-    state = {
-        savedBooks: [],
-    }
-
-    handleSave = book => {
-
-        if (this.state.savedBooks.map(book => book._id).includes(book._id)) {
-            API.deleteBook(book._id)
-                .then(deletedBook => this.setState({ savedBooks: this.state.savedBooks.filter(book => book._id !== deletedBook._id) }))
-                .catch(err => console.error(err));
-        } else {
-            API.saveBook(book)
-                .then(savedBook => this.setState({ savedBooks: this.state.savedBooks.concat([savedBook]) }))
-                .catch(err => console.error(err));
-        }
-    }
-
-   
-    componentDidMount() {
-        API.savedBooks()
-            .then(savedBooks => this.setState({ savedBooks: savedBooks }))
-            .catch(err => console.error(err));
-    }
-
-
-    render() {
-        return (
-            <div>
-                {!this.props.books.length ? (
-                    <h1 className="text-center">No search results...yet!</h1>
-                ) : (
-                        <div>
-                            {this.props.books.map(results => (
-                                <div className="card mb-3" key={results._id}>
-                                    <div className="row">
-                                        <div className="col-md-2">
-                                            <img alt={results.title} className="img-fluid" src={results.image} />
-                                        </div>
-                                        <div className="col-md-10">
-                                            <div className="card-body">
-                                                <h5 className="card-title">{results.title} by {results.authors}</h5>
-                                                <p className="card-text">{results.description}</p>
-                                                <div>
-                                                    <a href={results.link} className="btn badge-pill btn-outline-dark mt-3" target="_blank" >View</a>
-                                                    <button onClick={() => this.handleSave(results)} className="btn badge-pill btn-outline-warning mt-3 ml-3" >
-                                                        {this.state.savedBooks.map(book => book._id).includes(results._id) ? "Unsave" : "Save"}
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
+const SearchResult = props => {
+    return (props.books.length === 0) ? (
+        <div className="card">
+            <div className="card-body player">
+                <div className="article">
+                    <h3>Search Results</h3>
+                </div>
+            </div>
+        </div>
+    ) : (
+            <div className="card">
+                <div className="card-body player">
+                    <div className="article">
+                        <h3>Search Results</h3>
+                        {props.books.map(book => {
+                            return (
+                                <li className="search-list list-group-item">
+                                    <Row className="SearchResult row" id={book.title + "Card"} key={book._id}>
+                                        {/* col-3 show image of the book */}
+                                        <Col size="2" className="bookImage">
+                                            <img src={book.image} alt={book.title} />
+                                        </Col>
+                                        <Col size="1" className="emptyCol"/>
+                                        {/* col-9 show information of the book */}
+                                        <Col size="9" className="bookInfo">
+                                            <Row>
+                                                <h3 className="bookTitle">{book.title}</h3>
+                                            </Row>
+                                            <Row>
+                                                <h4 className="bookAuthor">{book.author}</h4>
+                                            </Row>
+                                            <Row>
+                                                <p className="bookDescription">{book.description}</p>
+                                            </Row>
+                                        </Col>
+                                    </Row>
+                                    <br></br>
+                                    <Row className="buttonDiv ">
+                                        <button className="saveBook btn btn-primary" id={book.id} onClick={(event) => props.handleSavedButton(event)}>
+                                            Save Book
+                                        </button>
+                                        <a href={book.link} target="_blank">
+                                            <button className="viewBook btn btn-success">
+                                                View Book
+                                            </button>
+                                        </a>
+                                    </Row>
+                                </li>
+                            );
+                        })}
+                    </div>
+                </div>
             </div>
         )
-    }
 }
-
-export default Results;
+export default SearchResult

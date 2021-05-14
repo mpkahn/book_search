@@ -4,14 +4,13 @@ import Nav from "../components/Nav/index";
 import Jumbo from "../components/Jumbo/index";
 import SearchForm from "../components/Search/index";
 import API from "../utils/API";
-import ResultList from "../components/ResultList/ResultList";
+import Results from "../components/SearchResultList/index";
 
 class Main extends Component {
 
     state = {
         books: [],
         search: "",
-        error: "",
     };
 
 
@@ -19,7 +18,6 @@ class Main extends Component {
     searchBooks = () => {
         API.googleBooks(this.state.search)
             .then(res => {
-                console.log("This is res.data", res.data.items)
                 this.setState({
                 books: res.data.items,
                 search: ""
@@ -29,7 +27,7 @@ class Main extends Component {
     };
 
     saveGoogleBook = currentBook => {
-        console.log("This is the current book", currentBook);
+        console.log("Current book:", currentBook);
         API.saveBook({
             id: currentBook.id,
             title: currentBook.title,
@@ -38,8 +36,8 @@ class Main extends Component {
             image: currentBook.image,
             link: currentBook.link
         })
-        .then(res => console.log("Successful POST to DB!", res))
-        .catch(err => console.log("this is the error", err));
+        .then(res => console.log("Successfully posted to db", res))
+        .catch(err => console.log(err));
     };
 
       // Function to handle data submitted through form
@@ -64,25 +62,18 @@ class Main extends Component {
                 <Container fluid>
                 <Jumbo />
                 <SearchForm>
-                    <h5>Search for books</h5>
-                    <Input 
-                        value={this.state.search}
-                        onChange={this.handleInputChange}
-                        name="search"
-                        placeholder="e.g. Harry Potter"
-                    />
-                    <SubmitBtn onClick={this.handleFormSubmit}/>
+                
                 </SearchForm>
                 
                 {this.state.books.length ? (
-                    <ResultList 
+                    <Results 
                     bookState={this.state.books}
                     saveGoogleBook={this.saveGoogleBook}>
-                    </ResultList>
+                    </Results>
                 ) : (
                     <div>
                         <hr/>
-                    <p style={{fontStyle: "italic"}}>No results to display</p>
+                    <p style>No results to display</p>
                     </div>
                 )}
                 
